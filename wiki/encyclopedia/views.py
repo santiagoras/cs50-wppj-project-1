@@ -17,6 +17,6 @@ def read_entry(request, entry):
         "entry": util.md2html(util.get_entry(entry))
     })
 
-def write_entry(request, entry):
-    return HttpResponse(f"Write, { entry }!")
+def write_entry(request):
+    return render(request, "encyclopedia/contribution.html")
 

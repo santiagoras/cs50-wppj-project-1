@@ -9,6 +9,7 @@ def list_entries():
     Returns a list of all names of encyclopedia entries.
     """
     _, filenames = default_storage.listdir("entries")
+    # Changing RE here could inject link directly in html: (r"(.*)\.md$", r"<a href='wiki/\1'>\1</a>", filename)
     return list(sorted(re.sub(r"\.md$", "", filename)
                 for filename in filenames if filename.endswith(".md")))
 
