@@ -7,9 +7,14 @@ Wiki contribution
 {% block body %}
 <h1>Make your contribution!</h1>
 <p>Create or edit your article in markdown (.md) format</p>
-<form>
-    <input type="text">
+
+<form action="{% url 'encyclopedia:write' %}" method="POST">
+    {% csrf_token %}
+    {{ form.as_ul }}
+    
     <input type="submit">
 </form>
+
+
 
 {% endblock %}

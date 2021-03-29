@@ -1,9 +1,14 @@
 #Momentarily HttpResponse imported to test views
+from django import forms
 from django.http import HttpResponse
 from django.shortcuts import render
 
 
 from . import util
+
+class WikiArticleForm(forms.Form):
+    title = forms.CharField(label="Article's title")
+    content = forms.CharField(label="Article's content", widget=forms.Textarea)
 
 
 def index(request):
@@ -18,5 +23,18 @@ def read_entry(request, entry):
     })
 
 def write_entry(request):
-    return render(request, "encyclopedia/contribution.html")
+    if request.method == "POST":
+        form = WikiArticleForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data['title']
+            content = form.cleaned_data['content']
+            util.save_entry(title, content)
+        else:
+            return request(request, "encyclopedia/contribution.html", {
+                'form': form
+            })
+
+    return render(request, "encyclopedia/contribution.html", {
+        "form": WikiArticleForm()
+    })
 
