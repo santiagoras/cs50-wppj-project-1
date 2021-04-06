@@ -7,6 +7,11 @@ Wiki contribution
 {% block body %}
 <h1>Make your contribution!</h1>
 <p>Create or edit your article in markdown (.md) format</p>
+{% if alert %}
+    <div class="alert alert-danger">
+        <strong>Yikes!</strong> {{ alert }}
+    </div>
+{% endif %}
 
 <form action="{% url 'encyclopedia:write' %}" method="POST">
     {% csrf_token %}

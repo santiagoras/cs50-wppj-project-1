@@ -27,11 +27,21 @@ def write_entry(request):
         form = WikiArticleForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data['title']
+            if title in util.list_entries():
+                return render(request, "encyclopedia/contribution.html", {
+                'form': form,
+                'alert': 'this entry already Exist! You may want to edit it.'
+            })
             content = form.cleaned_data['content']
             util.save_entry(title, content)
+            return render(request, "encyclopedia/wiki.html",{
+        "entry": util.md2html(util.get_entry(title))
+    })
+
         else:
-            return request(request, "encyclopedia/contribution.html", {
-                'form': form
+            return render(request, "encyclopedia/contribution.html", {
+                'form': form,
+                'alert': 'this entry already Exist! You may want to edit it.'
             })
 
     return render(request, "encyclopedia/contribution.html", {
