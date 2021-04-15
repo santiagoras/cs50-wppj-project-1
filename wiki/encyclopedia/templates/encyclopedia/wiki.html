@@ -6,4 +6,5 @@ Read placeholder
 
 {% block body %}    
 {{ entry|safe }}
+<a href="{% url 'encyclopedia:edit' title %}">Edit this entry</a>
 {% endblock %}

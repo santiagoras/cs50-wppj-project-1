@@ -1,0 +1,27 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+Wiki contribution
+{% endblock %}
+
+{% block body %}
+<h1>Make your contribution!</h1>
+<p>Edit the {{title}} article in markdown (.md) format</p>
+{% if alert %}
+    <div class="alert alert-danger">
+        <strong>Yikes!</strong> {{ alert }}
+    </div>
+{% endif %}
+
+<form action="{% url 'encyclopedia:edit' title %}" method="POST">
+    {% csrf_token %}
+
+    {{ form.title.disabled }}
+    {{ form.content }}
+    
+    <input type="submit">
+</form>
+
+
+
+{% endblock %}

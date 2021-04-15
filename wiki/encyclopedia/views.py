@@ -9,7 +9,7 @@ from . import util
 class WikiArticleForm(forms.Form):
     title = forms.CharField(label="Article's title")
     content = forms.CharField(label="Article's content", widget=forms.Textarea)
-
+    
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -19,7 +19,8 @@ def index(request):
 # Function to render wiki/entry view
 def read_entry(request, entry):
     return render(request, "encyclopedia/wiki.html",{
-        "entry": util.md2html(util.get_entry(entry))
+        "entry": util.md2html(util.get_entry(entry)),
+        "title": entry
     })
 
 def write_entry(request):
@@ -47,4 +48,28 @@ def write_entry(request):
     return render(request, "encyclopedia/contribution.html", {
         "form": WikiArticleForm()
     })
+
+def edit_entry(request, entry):
+
+    if request.method == "POST":
+        form = WikiArticleForm(request.POST)
+        if form.is_valid():
+            title = entry
+            if form.cleaned_data['content'] == "":
+                return render(request, "encyclopedia/contribution.html", {
+                'form': form,
+                'alert': 'You shoud write something, not delete it!'
+            })
+            content = form.cleaned_data['content']
+            util.save_entry(title, content)
+            return render(request, "encyclopedia/wiki.html",{
+            "entry": util.md2html(util.get_entry(title))
+            })
+
+
+    return render(request, "encyclopedia/edit.html", {
+        "form": WikiArticleForm(initial={'title':entry, 'content':util.md2html(util.get_entry(entry))}),
+        "title": entry
+    })
+
 
