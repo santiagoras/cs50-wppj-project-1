@@ -15,9 +15,7 @@ Wiki contribution
 
 <form action="{% url 'encyclopedia:edit' title %}" method="POST">
     {% csrf_token %}
-
-    {{ form.title.disabled }}
-    {{ form.content }}
+    {{ form }}
     
     <input type="submit">
 </form>
