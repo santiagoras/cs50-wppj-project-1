@@ -5,24 +5,50 @@ from django.shortcuts import render
 import random
 
 
+
 from . import util
 
 class WikiArticleForm(forms.Form):
-    title = forms.CharField(label="Article's title")
-    content = forms.CharField(label="Article's content", widget=forms.Textarea)
+    title = forms.CharField(label=False, widget=forms.TextInput(attrs={"placeholder":"Article's title"}))
+    content = forms.CharField(label=False, widget=forms.Textarea(attrs={"placeholder":"Article's content"}))
     
 class WikiEditForm(forms.Form):
-    content = forms.CharField(label="Articles's Content", widget=forms.Textarea)
+    content = forms.CharField(label=False, widget=forms.Textarea(attrs={"placeholder":"Article's content"}))
 
 
 def index(request):
+    if request.method == "POST":
+        if request.POST['q'] in util.list_entries():
+            return render(request, "encyclopedia/wiki.html", {
+                "entry": util.md2html(util.get_entry(request.POST['q'])),
+                "title": request.POST['q']
+            })
+        s_results=[]
+        for entry in util.list_entries():
+            if entry.casefold().find(request.POST['q'].casefold()) != -1:
+                s_results.append(entry)
+                print(s_results)
+        if s_results:
+            return render(request, "encyclopedia/index.html", {
+                "entries": s_results,
+                "l_type": "Search results"
+            })
+        else:
+            return render(request, "encyclopedia/index.html", {
+                "entries": s_results,
+                "l_type": "Search results",
+                "alert": "your search didn't match any articles"
+            })
+
+        
     return render(request, "encyclopedia/index.html", {
-        "entries": util.list_entries()
+        "entries": util.list_entries(),
+        "l_type": "All pages"
     })
 
 # Function to render wiki/entry view
 def read_entry(request, entry):
-    return render(request, "encyclopedia/wiki.html",{
+    return render(request, "encyclopedia/wiki.html", {
         "entry": util.md2html(util.get_entry(entry)),
         "title": entry
     })
@@ -76,7 +102,7 @@ def edit_entry(request, entry):
             })
             content = form.cleaned_data['content']
             util.save_entry(entry, content)
-            return render(request, "encyclopedia/wiki.html",{
+            return render(request, "encyclopedia/wiki.html", {
             "entry": util.md2html(util.get_entry(entry)),
             "title": entry
             })
